@@ -1,11 +1,13 @@
 TEMPLATE = subdirs
  
-SUBDIRS += darkstyle \
+SUBDIRS += framelesswindow \
+           darkstyle \
            text\
 
+framelesswindow.subdir = framelesswindow
 darkstyle.subdir = darkstyle
 text.subdir = text
 
 CONFIG += ordered
 
-text.depends = darkstyle
+text.depends = darkstyle framelesswindow

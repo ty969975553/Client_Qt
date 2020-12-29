@@ -6,7 +6,7 @@
 
 QT       += widgets
 
-TARGET = darkstyle
+TARGET = framelesswindow
 TEMPLATE = lib
 CONFIG += staticlib
 
@@ -21,10 +21,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += darkstyle.cpp
+SOURCES += framelesswindow.cpp \
+           windowdragger.cpp \
 
-HEADERS += darkstyle.h
+HEADERS += framelesswindow.h \
+           windowdragger.h \
 
-RESOURCES   += darkstyle.qrc
+FORMS       += framelesswindow.ui
+
+RESOURCES   += framelesswindow.qrc
 
 include(../target.pri)
+

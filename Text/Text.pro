@@ -33,3 +33,13 @@ HEADERS += \
 
 RESOURCES += \
     res.qrc
+
+include(../target.pri)
+
+LIBS += -L$$DESTDIR \
+        darkstyle.lib \
+        framelesswindow.lib
+
+INCLUDEPATH += ../
+#DEPENDPATH += $$DESTDIR/
+

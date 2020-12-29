@@ -864,6 +864,7 @@ void TextEditWindow::clipboardDataChanged()
 
 void TextEditWindow::about()
 {
+//    QMessageBox::setStyle()
     QMessageBox::about(this, tr("About"), tr("This example demonstrates Qt's "
                                              "rich text editing facilities in action, providing an example "
                                              "document for you to experiment with."));
