@@ -54,6 +54,7 @@
 #include <QMainWindow>
 #include <QMap>
 #include <QPointer>
+#include "QtAwesome/QtAwesome.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -71,6 +72,7 @@ class TextEditWindow : public QMainWindow
 
 public:
     TextEditWindow(QWidget *parent = 0);
+    ~TextEditWindow();
 
     bool load(const QString &f);
 
@@ -147,6 +149,8 @@ private:
     QToolBar *tb;
     QString fileName;
     QTextEdit *textEdit;
+    QtAwesome *awesome_ = nullptr;
+    QVariantMap options_;
 };
 
 #endif // TEXTEDIT_H

@@ -95,7 +95,6 @@ public:
 
         // add some 'padding' around the icon
         int drawSize = qRound(rect.height()*options.value("scale-factor").toFloat());
-
         painter->setFont( awesome->font(drawSize) );
         painter->drawText( rect, text, QTextOption( Qt::AlignCenter|Qt::AlignVCenter ) );
         painter->restore();

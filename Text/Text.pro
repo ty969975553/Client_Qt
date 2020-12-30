@@ -35,10 +35,12 @@ RESOURCES += \
     res.qrc
 
 include(../target.pri)
+include(../QtAwesome/QtAwesome.pri)
 
 LIBS += -L$$DESTDIR \
         darkstyle.lib \
-        framelesswindow.lib
+        framelesswindow.lib \
+        FontAwesomeIcons.lib
 
 INCLUDEPATH += ../
 #DEPENDPATH += $$DESTDIR/

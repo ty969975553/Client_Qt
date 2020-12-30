@@ -96,6 +96,15 @@ const QString rsrcPath = ":/images/win";
 TextEditWindow::TextEditWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    awesome_ = new QtAwesome(this);
+    awesome_->initFontAwesome();
+
+    options_.clear();
+    options_.insert("color", QColor(Qt::darkGray));
+    options_.insert("color-active", QColor(Qt::white));
+    options_.insert("color-disabled", QColor(Qt::gray));
+    options_.insert("color-selected", QColor(Qt::lightGray));
+
 #ifdef Q_OS_MACOS
     setUnifiedTitleAndToolBarOnMac(true);
 #endif
@@ -174,6 +183,16 @@ TextEditWindow::TextEditWindow(QWidget *parent)
 #endif
 }
 
+TextEditWindow::~TextEditWindow()
+{
+    if(awesome_)
+    {
+        delete awesome_;
+        awesome_ = nullptr;
+    }
+}
+
+
 void TextEditWindow::closeEvent(QCloseEvent *e)
 {
     if (maybeSave())
@@ -187,20 +206,20 @@ void TextEditWindow::setupFileActions()
     QToolBar *tb = addToolBar(tr("File Actions"));
     QMenu *menu = menuBar()->addMenu(tr("&File"));
 
-    const QIcon newIcon = QIcon::fromTheme("document-new", QIcon(rsrcPath + "/filenew.png"));
+    const QIcon newIcon = awesome_->icon(fa::fa_file_o, options_);
     QAction *a = menu->addAction(newIcon,  tr("&New"), this, &TextEditWindow::fileNew);
     tb->addAction(a);
     a->setPriority(QAction::LowPriority);
     a->setShortcut(QKeySequence::New);
 
-    const QIcon openIcon = QIcon::fromTheme("document-open", QIcon(rsrcPath + "/fileopen.png"));
+    const QIcon openIcon = awesome_->icon(fa::fa_folder_open_o, options_);
     a = menu->addAction(openIcon, tr("&Open..."), this, &TextEditWindow::fileOpen);
     a->setShortcut(QKeySequence::Open);
     tb->addAction(a);
 
     menu->addSeparator();
 
-    const QIcon saveIcon = QIcon::fromTheme("document-save", QIcon(rsrcPath + "/filesave.png"));
+    const QIcon saveIcon = awesome_->icon(fa::fa_save, options_);
     actionSave = menu->addAction(saveIcon, tr("&Save"), this, &TextEditWindow::fileSave);
     actionSave->setShortcut(QKeySequence::Save);
     actionSave->setEnabled(false);
@@ -211,16 +230,16 @@ void TextEditWindow::setupFileActions()
     menu->addSeparator();
 
 #if defined(QT_PRINTSUPPORT_LIB) && QT_CONFIG(printer)
-    const QIcon printIcon = QIcon::fromTheme("document-print", QIcon(rsrcPath + "/fileprint.png"));
+    const QIcon printIcon = awesome_->icon(fa::fa_print, options_);
     a = menu->addAction(printIcon, tr("&Print..."), this, &TextEditWindow::filePrint);
     a->setPriority(QAction::LowPriority);
     a->setShortcut(QKeySequence::Print);
     tb->addAction(a);
 
-    const QIcon filePrintIcon = QIcon::fromTheme("fileprint", QIcon(rsrcPath + "/fileprint.png"));
+    const QIcon filePrintIcon = awesome_->icon(fa::fa_print, options_);
     menu->addAction(filePrintIcon, tr("Print Preview..."), this, &TextEditWindow::filePrintPreview);
 
-    const QIcon exportPdfIcon = QIcon::fromTheme("exportpdf", QIcon(rsrcPath + "/exportpdf.png"));
+    const QIcon exportPdfIcon = awesome_->icon(fa::fa_file_pdf_o, options_);
     a = menu->addAction(exportPdfIcon, tr("&Export PDF..."), this, &TextEditWindow::filePrintPdf);
     a->setPriority(QAction::LowPriority);
     a->setShortcut(Qt::CTRL + Qt::Key_D);
@@ -238,12 +257,12 @@ void TextEditWindow::setupEditActions()
     QToolBar *tb = addToolBar(tr("Edit Actions"));
     QMenu *menu = menuBar()->addMenu(tr("&Edit"));
 
-    const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(rsrcPath + "/editundo.png"));
+    const QIcon undoIcon = awesome_->icon(fa::fa_undo, options_);
     actionUndo = menu->addAction(undoIcon, tr("&Undo"), textEdit, &QTextEdit::undo);
     actionUndo->setShortcut(QKeySequence::Undo);
     tb->addAction(actionUndo);
 
-    const QIcon redoIcon = QIcon::fromTheme("edit-redo", QIcon(rsrcPath + "/editredo.png"));
+    const QIcon redoIcon = awesome_->icon(fa::fa_repeat, options_);
     actionRedo = menu->addAction(redoIcon, tr("&Redo"), textEdit, &QTextEdit::redo);
     actionRedo->setPriority(QAction::LowPriority);
     actionRedo->setShortcut(QKeySequence::Redo);
@@ -251,19 +270,19 @@ void TextEditWindow::setupEditActions()
     menu->addSeparator();
 
 #ifndef QT_NO_CLIPBOARD
-    const QIcon cutIcon = QIcon::fromTheme("edit-cut", QIcon(rsrcPath + "/editcut.png"));
+    const QIcon cutIcon = awesome_->icon(fa::fa_cut, options_);
     actionCut = menu->addAction(cutIcon, tr("Cu&t"), textEdit, &QTextEdit::cut);
     actionCut->setPriority(QAction::LowPriority);
     actionCut->setShortcut(QKeySequence::Cut);
     tb->addAction(actionCut);
 
-    const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(rsrcPath + "/editcopy.png"));
+    const QIcon copyIcon = awesome_->icon(fa::fa_copy, options_);
     actionCopy = menu->addAction(copyIcon, tr("&Copy"), textEdit, &QTextEdit::copy);
     actionCopy->setPriority(QAction::LowPriority);
     actionCopy->setShortcut(QKeySequence::Copy);
     tb->addAction(actionCopy);
 
-    const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(rsrcPath + "/editpaste.png"));
+    const QIcon pasteIcon = awesome_->icon(fa::fa_paste, options_);
     actionPaste = menu->addAction(pasteIcon, tr("&Paste"), textEdit, &QTextEdit::paste);
     actionPaste->setPriority(QAction::LowPriority);
     actionPaste->setShortcut(QKeySequence::Paste);
@@ -278,7 +297,7 @@ void TextEditWindow::setupTextActions()
     QToolBar *tb = addToolBar(tr("Format Actions"));
     QMenu *menu = menuBar()->addMenu(tr("F&ormat"));
 
-    const QIcon boldIcon = QIcon::fromTheme("format-text-bold", QIcon(rsrcPath + "/textbold.png"));
+    const QIcon boldIcon = awesome_->icon(fa::fa_bold, options_);
     actionTextBold = menu->addAction(boldIcon, tr("&Bold"), this, &TextEditWindow::textBold);
     actionTextBold->setShortcut(Qt::CTRL + Qt::Key_B);
     actionTextBold->setPriority(QAction::LowPriority);
@@ -288,7 +307,7 @@ void TextEditWindow::setupTextActions()
     tb->addAction(actionTextBold);
     actionTextBold->setCheckable(true);
 
-    const QIcon italicIcon = QIcon::fromTheme("format-text-italic", QIcon(rsrcPath + "/textitalic.png"));
+    const QIcon italicIcon = awesome_->icon(fa::fa_italic, options_);
     actionTextItalic = menu->addAction(italicIcon, tr("&Italic"), this, &TextEditWindow::textItalic);
     actionTextItalic->setPriority(QAction::LowPriority);
     actionTextItalic->setShortcut(Qt::CTRL + Qt::Key_I);
@@ -298,7 +317,7 @@ void TextEditWindow::setupTextActions()
     tb->addAction(actionTextItalic);
     actionTextItalic->setCheckable(true);
 
-    const QIcon underlineIcon = QIcon::fromTheme("format-text-underline", QIcon(rsrcPath + "/textunder.png"));
+    const QIcon underlineIcon = awesome_->icon(fa::fa_underline, options_);
     actionTextUnderline = menu->addAction(underlineIcon, tr("&Underline"), this, &TextEditWindow::textUnderline);
     actionTextUnderline->setShortcut(Qt::CTRL + Qt::Key_U);
     actionTextUnderline->setPriority(QAction::LowPriority);
@@ -310,31 +329,31 @@ void TextEditWindow::setupTextActions()
 
     menu->addSeparator();
 
-    const QIcon leftIcon = QIcon::fromTheme("format-justify-left", QIcon(rsrcPath + "/textleft.png"));
+    const QIcon leftIcon = awesome_->icon(fa::fa_align_left, options_);
     actionAlignLeft = new QAction(leftIcon, tr("&Left"), this);
     actionAlignLeft->setShortcut(Qt::CTRL + Qt::Key_L);
     actionAlignLeft->setCheckable(true);
     actionAlignLeft->setPriority(QAction::LowPriority);
-    const QIcon centerIcon = QIcon::fromTheme("format-justify-center", QIcon(rsrcPath + "/textcenter.png"));
+    const QIcon centerIcon = awesome_->icon(fa::fa_align_center, options_);
     actionAlignCenter = new QAction(centerIcon, tr("C&enter"), this);
     actionAlignCenter->setShortcut(Qt::CTRL + Qt::Key_E);
     actionAlignCenter->setCheckable(true);
     actionAlignCenter->setPriority(QAction::LowPriority);
-    const QIcon rightIcon = QIcon::fromTheme("format-justify-right", QIcon(rsrcPath + "/textright.png"));
+    const QIcon rightIcon = awesome_->icon(fa::fa_align_right, options_);
     actionAlignRight = new QAction(rightIcon, tr("&Right"), this);
     actionAlignRight->setShortcut(Qt::CTRL + Qt::Key_R);
     actionAlignRight->setCheckable(true);
     actionAlignRight->setPriority(QAction::LowPriority);
-    const QIcon fillIcon = QIcon::fromTheme("format-justify-fill", QIcon(rsrcPath + "/textjustify.png"));
+    const QIcon fillIcon = awesome_->icon(fa::fa_align_justify, options_);
     actionAlignJustify = new QAction(fillIcon, tr("&Justify"), this);
     actionAlignJustify->setShortcut(Qt::CTRL + Qt::Key_J);
     actionAlignJustify->setCheckable(true);
     actionAlignJustify->setPriority(QAction::LowPriority);
-    const QIcon indentMoreIcon = QIcon::fromTheme("format-indent-more", QIcon(rsrcPath + "/format-indent-more.png"));
+    const QIcon indentMoreIcon = awesome_->icon(fa::fa_indent, options_);
     actionIndentMore = menu->addAction(indentMoreIcon, tr("&Indent"), this, &TextEditWindow::indent);
     actionIndentMore->setShortcut(Qt::CTRL + Qt::Key_BracketRight);
     actionIndentMore->setPriority(QAction::LowPriority);
-    const QIcon indentLessIcon = QIcon::fromTheme("format-indent-less", QIcon(rsrcPath + "/format-indent-less.png"));
+    const QIcon indentLessIcon = awesome_->icon(fa::fa_dedent, options_);
     actionIndentLess = menu->addAction(indentLessIcon, tr("&Unindent"), this, &TextEditWindow::unindent);
     actionIndentLess->setShortcut(Qt::CTRL + Qt::Key_BracketLeft);
     actionIndentLess->setPriority(QAction::LowPriority);
@@ -363,14 +382,14 @@ void TextEditWindow::setupTextActions()
 
     menu->addSeparator();
 
-    QPixmap pix(16, 16);
+    QPixmap pix(30, 30);
     pix.fill(Qt::black);
     actionTextColor = menu->addAction(pix, tr("&Color..."), this, &TextEditWindow::textColor);
     tb->addAction(actionTextColor);
 
     menu->addSeparator();
 
-    const QIcon checkboxIcon = QIcon::fromTheme("status-checkbox-checked", QIcon(rsrcPath + "/checkbox-checked.png"));
+    const QIcon checkboxIcon = awesome_->icon(fa::fa_check_square_o, options_);
     actionToggleCheckState = menu->addAction(checkboxIcon, tr("Chec&ked"), this, &TextEditWindow::setChecked);
     actionToggleCheckState->setShortcut(Qt::CTRL + Qt::Key_K);
     actionToggleCheckState->setCheckable(true);
@@ -864,7 +883,7 @@ void TextEditWindow::clipboardDataChanged()
 
 void TextEditWindow::about()
 {
-//    QMessageBox::setStyle()
+    //    QMessageBox::setStyle()
     QMessageBox::about(this, tr("About"), tr("This example demonstrates Qt's "
                                              "rich text editing facilities in action, providing an example "
                                              "document for you to experiment with."));
@@ -890,7 +909,7 @@ void TextEditWindow::fontChanged(const QFont &f)
 
 void TextEditWindow::colorChanged(const QColor &c)
 {
-    QPixmap pix(16, 16);
+    QPixmap pix(30, 30);
     pix.fill(c);
     actionTextColor->setIcon(pix);
 }
